@@ -122,6 +122,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // Start countdown
         updateCountdown();
+        socket.emit('plan-meet', {
+            username,
+            roomKey,
+            meetDateTime: new Date(meetTimestamp).toISOString()
+        });
         setInterval(updateCountdown, 1000);
     }
 
@@ -154,9 +159,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Function to check if partner location matches (stub example)
     function isLocationMatched() {
-        const partnerLocation = [22.54469994304512, 88.32371888215096];
-        const partnerDist = map.distance([latitude, longitude], partnerLocation);
-        return partnerDist < 50; 
+        if (myLatitude === null || myLongitude === null || !partnerLocation) return false;
+        const partnerDist = map.distance([myLatitude, myLongitude], partnerLocation);
+        return partnerDist < 50;
     }
 
     // Handle "Plan a Meet" button click
@@ -166,6 +171,11 @@ window.addEventListener('DOMContentLoaded', () => {
             const parsedDate = new Date(meetDateTime);
             if (!isNaN(parsedDate.getTime())) {
                 setMeetCountdown(parsedDate);
+                socket.emit('plan-meet', {
+                    username,
+                    roomKey,
+                    meetDateTime: parsedDate.toISOString()
+                });
             } else {
                 alert("Invalid date-time format!");
             }
@@ -183,10 +193,16 @@ window.addEventListener('DOMContentLoaded', () => {
     statusBar.textContent = 'Waiting for partner...';
     document.body.appendChild(statusBar);
 
+    let myLatitude = null;
+    let myLongitude = null;
+    let partnerLocation = null;
+
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
+                myLatitude = latitude;
+                myLongitude = longitude;
 
                 socket.emit('send-location', {
                     roomKey,
@@ -239,6 +255,7 @@ window.addEventListener('DOMContentLoaded', () => {
     socket.on('receive-location', (data) => {
         const { id, username, latitude, longitude } = data;
         console.log(`${username} is at ${latitude}, ${longitude}`);
+        partnerLocation = [latitude, longitude];
 
         let overlap = false;
         for (const otherId in markers) {
@@ -323,6 +340,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
             map.removeLayer(markers[id]);
             delete markers[id];
+        }
+    });
+
+    socket.on('meet-planned', ({ username, meetDateTime }) => {
+        const parsedDate = new Date(meetDateTime);
+        if (!isNaN(parsedDate.getTime())) {
+            meetTimestamp = parsedDate.getTime();
+            bufferTimestamp = meetTimestamp + (4 * 60 * 60 * 1000); 
+            updateCountdown();
         }
     });
 });

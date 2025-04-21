@@ -30,6 +30,10 @@ io.on('connection', (socket) => {
         const { roomKey, username, latitude, longitude } = data;
         io.to(roomKey).emit('receive-location', { id: socket.id, username, latitude, longitude });
     });
+    // ✅ Handle meet planning and broadcast to both users
+    socket.on('plan-meet', ({ username, roomKey, meetDateTime }) => {
+        io.to(roomKey).emit('meet-planned', { username, meetDateTime });
+    });
 
     socket.on('disconnect', () => {
         const user = users[socket.id];
