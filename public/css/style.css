@@ -1,13 +1,354 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-html,body{
-    height:100%;
-    width:100%;
+
+html, body {
+    height: 100%;
+    width: 100%;
 }
-#map{
-    height:100%;
-    width:100%;
+
+/* Map settings */
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+.marker-name-tooltip {
+    font-weight: bold;
+    background-color: #fff;
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 13px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Room link and Copy button settings */
+.room-display {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    z-index: 1000;
+}
+
+.copy-button {
+    position: fixed;
+    bottom: 60px;  /* Adjusted to avoid overlap with other elements */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;  /* Make sure the button stays above other elements */
+}
+
+.copy-button:hover {
+    background-color: #45a049;
+}
+
+.qr-code {
+    position: fixed;
+    bottom: 120px; /* Adjusted to make space between button and QR code */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px; /* Set width for the QR code */
+    height: 150px; /* Set height for the QR code */
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+/* Destination search field */
+.destination-input {
+    position: fixed;
+    top: 50px; /* Move up closer to the top */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 250px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    z-index: 1000;
+}
+
+/* I'm going to... button */
+.destination-button {
+    position: fixed;
+    top: 100px; /* Adjusted to appear just below destination input */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.destination-button:hover {
+    background-color: #0b7dda;
+}
+
+/* Arrival notification */
+.arrival-notification {
+    position: fixed;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: slide-in 8s ease-out;
+}
+  
+@keyframes slide-in {
+    0% { transform: translate(-50%, 30px); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translate(-50%, 0); opacity: 0; }
+}
+
+/* Status bar */
+.status-bar {
+    position: fixed;
+    top: 150px; /* Adjust the status bar below the buttons */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffffee;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+    z-index: 9999;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Pulse heart animation */
+.pulse-heart {
+    animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.2); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 0.9; }
+}
+
+/* Plan a Meet button */
+.plan-meet-button {
+    position: fixed;
+    bottom: 10px; /* Keep it at the bottom-right */
+    right: 10px;  /* Position it at the right */
+    background-color: #ff4081;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.plan-meet-button:hover {
+    background-color: #e9336c;
+}
+
+/* Modal for setting the meet date and time */
+.meet-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    font-size: 20px;
+    color: #ff4081;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.meet-datetime-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.submit-button {
+    padding: 12px 24px;
+    background-color: #ff4081;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #e9336c;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    /* Plan a Meet button stays at bottom-right */
+    .plan-meet-button {
+        bottom: 10px;
+        right: 10px;
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    /* Destination button stays at the top center */
+    .destination-button {
+        top: 100px; /* Placed below destination input */
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    /* Adjust input for destination */
+    .destination-input {
+        top: 60px;  /* Increase the gap between the "I'm going to..." button */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px;
+        font-size: 14px;
+    }
+
+    .modal-content {
+        padding: 20px;
+    }
+
+    .meet-datetime-input, .submit-button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .countdown-wrapper {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+}
+/* Plan a Meet button */
+.plan-meet-button {
+    position: fixed;
+    bottom: 10px; /* Keep it at the bottom-right */
+    right: 10px;  /* Position it at the right */
+    background-color: #ff4081;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.plan-meet-button:hover {
+    background-color: #e9336c;
+}
+
+/* Modal for setting the meet date and time */
+.meet-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #ff4081, #f50057);
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modal-header {
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.meet-datetime-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.submit-button {
+    padding: 12px 24px;
+    background-color: #ff4081;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #e9336c;
 }
